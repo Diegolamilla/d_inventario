@@ -165,6 +165,75 @@ function cargar_sede_filtro(sedes) {
     document.getElementById('busqueda_tabla_sede').innerHTML = lista_sede;
 }
 
-
-
 // ------------------------------------------- FIN DE DATOS DE CARGA PARA FILTRO DE BUSQUEDA -----------------------------------------------
+
+async function validar_datos_reset_password() {
+    let id = document.getElementById('data').value;
+    let token = document.getElementById('data2').value;
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('token', token);
+    formData.append('sesion', '');
+
+    try {
+        let respuesta = await fetch(base_url_server + 'src/control/usuario.php?tipo=validar_datos_reset_password', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: formData
+        });
+        let json = await respuesta.json();
+        if (json.status == false) {
+            Swal.fire({
+                type: 'error',
+                title: 'Error de Link',
+                text: "Link Caducada, Verifique su correo",
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 1000
+            });
+            let formulario =document.getElementById('login-container');
+            formulario.innerHTML = `<h1>token caducado</h1> <img src="https://sispa.iestphuanta.edu.pe/img/logo.png" alt="" width="100%">`;
+            //location.replace(base_url + "login");
+        }
+    } catch (error) {
+        console.log("Error al validar datos" + e);
+    }
+
+}
+
+function validar_imputs_password() {
+    let pass1 = document.getElementById('password').value;
+    let pass2 = document.getElementById('password1').value;
+
+    if (pass1 !== pass2) {
+        Swal.fire({
+                type: 'error',
+                title: 'Error',
+                text: "Sus contraseñas no coinsiden",
+                footer: '',
+                timer: 2000
+            });
+            return;
+    }
+    if (pass1.length<8 && pass2.length<8) {
+        Swal.fire({
+                type: 'error',
+                title: 'Error',
+                text: "La contraseña tiene que ser minimo 8 caracteres",
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 2000
+            });
+            return;
+    } else {
+        
+    }
+    actualizar_password();
+}
+async function actualizar_password() {
+    // enviar informacion de password y id al controlador usuario.
+    // resibir informacion y encriptar la nueva contraseña.
+    // guardar en la base de datos y actualizar campo de rest_password = 0 y token_password= ''.
+    //notificar a usuario sobre el estado del proceso
+}
