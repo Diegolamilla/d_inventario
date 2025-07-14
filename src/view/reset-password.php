@@ -100,7 +100,7 @@
     <form id="frm_reset_password">
       <input type="password" name="password" id="password" placeholder= "Nueva Contraseña" required>
       <input type="password" name="password1" id="password1" placeholder="Confirmar Contraseña" required>
-      <button type="button" onclick="validar_imputs_password()">Actualizar Contraseña</button>
+      <button type="button" onclick="validar_imputs_password();">Actualizar Contraseña</button>
     </form>
   </div>
 </body>

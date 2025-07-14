@@ -34,6 +34,39 @@ if ($tipo == "validar_datos_reset_password") {
   echo json_encode($arr_Respuesta);
 }
 
+if ($tipo == "actualizar_password_reset") {
+    $id = $_POST['id'];
+    $password = $_POST['password'];
+    
+    $arrRespuesta = array('status' => false, 'mensaje' => 'Token inválido o expirado');
+    
+    // Buscar usuario y validar token (igual que en validar_datos_reset_password)
+    $datos_usuario = $objUsuario->buscarUsuarioById($id);
+    
+    if ($datos_usuario && $datos_usuario->reset_password ) {
+        // Encriptar nueva contraseña
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Actualizar contraseña en base de datos
+        $actualizar = $objUsuario->actualizarPassword($id, $passwordHash);
+        
+        if ($actualizar) {
+            $token = '';
+            $estado = 0;
+            $limpiar_reset = $objUsuario->updateResetPassword($id, $token, $estado);
+            
+            if ($limpiar_reset) {
+                $arrRespuesta = array('status' => true, 'mensaje' => 'Contraseña actualizada correctamente');
+            } else {
+                $arrRespuesta = array('status' => true, 'mensaje' => 'Contraseña actualizada correctamente');
+            }
+        } else {
+            $arrRespuesta = array('status' => false, 'mensaje' => 'Error al actualizar la contraseña');
+        }
+    }
+    echo json_encode($arrRespuesta);
+}
+
 if ($tipo == "listar_usuarios_ordenados_tabla") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
@@ -71,6 +104,7 @@ if ($tipo == "listar_usuarios_ordenados_tabla") {
     }
     echo json_encode($arr_Respuesta);
 }
+
 if ($tipo == "registrar") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
@@ -148,6 +182,7 @@ if ($tipo == "actualizar") {
     }
     echo json_encode($arr_Respuesta);
 }
+
 if ($tipo == "reiniciar_password") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {

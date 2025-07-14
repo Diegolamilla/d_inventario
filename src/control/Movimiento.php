@@ -19,8 +19,8 @@ $objInstitucion = new InstitucionModel();
 $objUsuario = new UsuarioModel();
 
 //variables de sesion
-$id_sesion = $_POST['sesion'];
-$token = $_POST['token'];
+$id_sesion = $_REQUEST['sesion'];
+$token = $_REQUEST['token'];
 
 if ($tipo == "listar") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
@@ -88,7 +88,7 @@ if ($tipo == "listar_movimientos_ordenados_tabla") {
                 $arr_contenido[$i]->usuario_registro = $arr_Usuario->nombres_apellidos;
                 $arr_contenido[$i]->fecha_registro = $arr_Ambiente[$i]->fecha_registro;
                 $arr_contenido[$i]->descripcion = $arr_Ambiente[$i]->descripcion;
-                $opciones = '<button type="button" title="Ver" class="btn btn-primary waves-effect waves-light" data-toggle="modal" data-target=".modal_ver' . $arr_Ambiente[$i]->id . '"><i class="fa fa-eye"></i></button>';
+                $opciones = '<button type="button" title="Ver" class="btn btn-outline-primary waves-effect waves-light" data-toggle="modal" data-target=".modal_ver' . $arr_Ambiente[$i]->id . '"><i class="fa fa-eye"></i></button> <a href="'.BASE_URL.'imprimir-movimiento/'.$arr_Ambiente[$i]->id.'" class="btn btn-outline-danger"><i class="fa fa-print"></i></a>';
                 $arr_contenido[$i]->options = $opciones;
             }
             $arr_Respuesta['total'] = count($busqueda_filtro);
@@ -201,6 +201,33 @@ if ($tipo == "datos_registro") {
         $arr_Respuesta['instituciones'] = $arr_Instirucion;
         $arr_Respuesta['status'] = true;
         $arr_Respuesta['msg'] = "Datos encontrados";
+    }
+    echo json_encode($arr_Respuesta);
+}
+if ($tipo == "buscar_movimiento_id") {
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
+    if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
+        $id_movimiento = $_REQUEST['data'];
+        $arrMovimiento = $objMovimiento->buscarMovimientoById($id_movimiento);
+        $arrAmbOrigen = $objAmbiente->buscarAmbienteById($arrMovimiento->id_ambiente_origen);
+        $arrAmbDestino = $objAmbiente->buscarAmbienteById($arrMovimiento->id_ambiente_destino);
+        $arrUsuario = $objUsuario->buscarUsuarioById($arrMovimiento->id_usuario_registro);
+        $arrIes= $objInstitucion->buscarInstitucionById($arrMovimiento->id_ies);
+        $arrDetalle = $objMovimiento->buscarDetalle_MovimientoByMovimiento($id_movimiento);
+        $array_bienes = array();
+        foreach ($arrDetalle as $bien) {
+            $id_bien = $bien->id_bien;
+            $res_bien = $objBien->buscarBienById($id_bien);
+            array_push($array_bienes, $res_bien);
+        }
+        $arr_Respuesta['movimiento'] = $arrMovimiento;
+        $arr_Respuesta['amb_origen'] = $arrAmbOrigen;
+        $arr_Respuesta['amb_destino'] = $arrAmbDestino;
+        $arr_Respuesta['datos_usuario'] = $arrUsuario;
+        $arr_Respuesta['datos_ies'] = $arrIes;
+        $arr_Respuesta['detalle'] = $array_bienes;
+        $arr_Respuesta['status'] = true;
+        $arr_Respuesta['msg'] = 'correcto';
     }
     echo json_encode($arr_Respuesta);
 }

@@ -193,7 +193,7 @@ async function validar_datos_reset_password() {
                 timer: 1000
             });
             let formulario =document.getElementById('login-container');
-            formulario.innerHTML = `<h1>token caducado</h1> <img src="https://sispa.iestphuanta.edu.pe/img/logo.png" alt="" width="100%">`;
+            formulario.innerHTML = `<h1>token caducado</h1> <img src="https://sispa.iestphuanta.edu.pe/img/logo.png" alt="" width="100%"><button type="button" onclick="·">volver a login</button>`;
             //location.replace(base_url + "login");
         }
     } catch (error) {
@@ -227,13 +227,51 @@ function validar_imputs_password() {
             });
             return;
     } else {
-        
+        actualizar_password();
     }
-    actualizar_password();
+
 }
 async function actualizar_password() {
-    // enviar informacion de password y id al controlador usuario.
-    // resibir informacion y encriptar la nueva contraseña.
-    // guardar en la base de datos y actualizar campo de rest_password = 0 y token_password= ''.
-    //notificar a usuario sobre el estado del proceso
+    const id = document.getElementById('data').value;
+    const password = document.getElementById('password').value;
+    
+    
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('token', '');
+    formData.append('password', password);
+    formData.append('sesion', '');
+    
+    try {
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=actualizar_password_reset', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: formData
+        });
+        
+        let json = await respuesta.json();
+        
+        if (json.status) {
+            await Swal.fire({
+                type: 'success',
+                title: '¡Contraseña actualizada!',
+                text: 'Tu contraseña ha sido actualizada correctamente.',
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                timer: 3000,
+                timerProgressBar: true
+            });
+            
+            setTimeout(() => {
+                location.replace(base_url + "login");
+            }, 3000);
+            
+        } else {
+            throw new Error(json.mensaje || 'Error al actualizar la contraseña');
+        }
+        
+    } catch (error) {
+        console.log("Error al actualizar contraseña: " + error);
+        throw error;
+    }
 }
