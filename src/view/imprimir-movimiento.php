@@ -92,8 +92,9 @@ if ($err) {
 
         <h1>PAPELETA DE ROTACION DE BIENES</h1>
     
-   
+        <br>
         <div class="datos">
+       
             <p><strong>ENTIDAD:</strong> DIRECCION REGIONAL DE EDUCACION - AYACUCHO</p>
             <p><strong>AREA:</strong> OFICINA DE ADMINISTRACIÓN</p>
             <p><strong>ORIGEN:</strong> '. $respuesta->amb_origen->codigo . ' - ' . $respuesta->amb_origen->detalle .'</p>
@@ -169,19 +170,22 @@ if ($err) {
                 $anio = date('Y', $fecha);
                 $contenido_pdf.= "Ayacucho, $dia de $mes del $anio";
             }
-    $contenido_pdf .= '
             
+    $contenido_pdf .= '
+
         </p>
-        <div class="firmas">
-            <div class="firma" style="display: flex; align-items: center; justify-content: flex-end; height: 100px;">
-            <p style="margin-bottom: 5px;">------------------------------</p>
-            <p style="margin-top: 0;">ENTREGUE CONFORME</p>
-            </div>
-            <div class="firma" style="display: flex; align-items: center; justify-content: flex-end; height: 100px;">
-            <p style="margin-bottom: 5px;">------------------------------</p>
-            <p style="margin-top: 0;">RECIBI CONFORME</p>
-            </div>
-        </div>
+            <table style="width:100%; border: none; margin-top: 100px;"> <br><br><br><br><br><br>
+            <tr>
+                <td style="width: 50%; text-align: center;">
+                ------------------------------<br>
+                ENTREGUÉ CONFORME
+                </td>
+                <td style="width: 50%; text-align: center;">
+                ------------------------------<br>
+                RECIBÍ CONFORME
+                </td>
+            </tr>
+            </table>
 
     </body>
 
@@ -195,20 +199,29 @@ require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 class MYPDF extends TCPDF {
     // Encabezado
     public function Header() {
+        $img1 = $_SERVER['DOCUMENT_ROOT'] . '/d_inventario/src/view/pp/assets/images/GRA.jpg';
+        $img2 = $_SERVER['DOCUMENT_ROOT'] . '/d_inventario/src/view/pp/assets/images/DREA.jpg';
         $this->SetXY(10, 10);
         // Logo
-        $this->Image('img/logo_dre.png', 10, 10, 30, 30, 'PNG', '', '', false, 300, '', false, false, 0, false, false, false);
+        if (file_exists($img1)) {
+        $this->Image($img1, 10, 10, 30, 30, 'JPG', '', '', false, 300, '', false, false, 0, false, false, false);
+    }
+
+    // Imagen derecha (ajusta la posición X según el ancho de tu página)
+    if (file_exists($img2)) {
+        $this->Image($img2, 160, 10, 30, 30, 'JPG', '', '', false, 300, '', false, false, 0, false, false, false);
+    }
         // Título
-        $this->SetFont('helvetica', '', 9);
-        $this->Cell(0, 5, 'GOVIERNO REGIONAL DE AYACUCHO', 0, 1, 'C');
+        $this->SetFont('helvetica', 'B', 9);
+        $this->Cell(0, 5, 'GOBIERNO REGIONAL DE AYACUCHO', 0, 1, 'C');
         $this->SetFont('helvetica', 'B', 10);
         $this->Cell(0, 5, 'DIRECCION REGIONAL DE EDUCACION - AYACUCHO', 0, 1, 'C');
-        $this->SetFont('helvetica', '', 9);
+        $this->SetFont('helvetica', 'B', 9);
         $this->Cell(0, 5, 'DIRECCION DE ADMINISTRACION', 0, 1, 'C');
         $this->Ln(2);
+        $this->SetFont('helvetica', 'B', 10);
+        $this->Cell(0, 5, 'ANEXO N° 01', 0, 3, 'C');
         $this->SetXY(10, 10);
-        // Logo
-        $this->Image('img/logo_dre.png', 10, 10, 30, 30, 'PNG', '', '', false, 300, '', false, false, 0, false, false, false);
     }
 
     // Pie de página
