@@ -42,6 +42,11 @@
         </div>
         <div class="card">
             <div class="card-body">
+                <div>
+                  <a href="<?php echo BASE_URL; ?>reporte-bienes" class="btn btn-success"><i class="fa fa-file-excel"> Generar Reporte</i></a>
+                    <a href="<?php echo BASE_URL; ?>imprimir-movimiento" class="btn btn-info"><i class="fa fa-print"> Imprimir Bienes</i></a>  
+                </div>
+                
                 <h4 class="card-title">Resultados de Búsqueda</h4>
                 <div id="filtros_tabla_header" class="form-group  row page-title-box d-flex align-items-center justify-content-between m-0 mb-1 p-0">
                     <input type="hidden" id="pagina" value="1">
