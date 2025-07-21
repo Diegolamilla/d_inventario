@@ -199,18 +199,15 @@ require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 class MYPDF extends TCPDF {
     // Encabezado
     public function Header() {
-        $img1 = $_SERVER['DOCUMENT_ROOT'] . '/d_inventario/src/view/pp/assets/images/GRA.jpg';
-        $img2 = $_SERVER['DOCUMENT_ROOT'] . '/d_inventario/src/view/pp/assets/images/DREA.jpg';
         $this->SetXY(10, 10);
-        // Logo
-        if (file_exists($img1)) {
-        $this->Image($img1, 10, 10, 30, 30, 'JPG', '', '', false, 300, '', false, false, 0, false, false, false);
-    }
+        $logo_left  = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSABjBsifx4kJK7C6ewR1dqJ8DGpEoKk6McLQ&s';
+        $logo_right = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_BSnUuKJh7yQ05Oav2g2R4W3L0o99TfFS-A&s';
 
-    // Imagen derecha (ajusta la posición X según el ancho de tu página)
-    if (file_exists($img2)) {
-        $this->Image($img2, 160, 10, 30, 30, 'JPG', '', '', false, 300, '', false, false, 0, false, false, false);
-    }
+       $this->Image($logo_left, 15, 10, 38, 30); 
+      $this->Image($logo_right, 170, 10, 25, 25);
+       
+        // Logo
+        
         // Título
         $this->SetFont('helvetica', 'B', 9);
         $this->Cell(0, 5, 'GOBIERNO REGIONAL DE AYACUCHO', 0, 1, 'C');
