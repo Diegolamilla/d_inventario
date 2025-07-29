@@ -20,9 +20,20 @@ $objUsuario = new UsuarioModel();
 $objAdmin = new AdminModel();
 
 //variables de sesion
-$id_sesion = $_POST['sesion'];
-$token = $_POST['token'];
+$id_sesion = $_REQUEST['sesion'];
+$token = $_REQUEST['token'];
 
+if($tipo == "listarUsarios"){
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
+    if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
+        $arrUusario = $objUsuario->listarUsuarios();
+        $arr_Respuesta['usuarios'] = $arrUusario;
+        $arr_Respuesta['status'] = true;
+        $arr_Respuesta['msg'] = 'bien echo';
+    }
+    echo json_encode($arr_Respuesta);
+
+}
 if ($tipo == "validar_datos_reset_password") {
   $id_email = $_POST['id'];
   $token_email = $_POST['token'];
@@ -199,6 +210,7 @@ if ($tipo == "reiniciar_password") {
     }
     echo json_encode($arr_Respuesta);
 }
+
 
 if ($tipo == "sent_email_password") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');

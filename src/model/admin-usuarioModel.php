@@ -26,6 +26,14 @@ class UsuarioModel
         $sql = $this->conexion->query("UPDATE usuarios SET dni='$dni',nombres_apellidos='$nombres_apellidos',correo='$correo',telefono='$telefono',estado ='$estado' WHERE id='$id'");
         return $sql;
     }
+    public function listarUsuarios(){
+        $respuesta = array();
+        $sql = $this->conexion->query("SELECT * FROM usuarios");
+        while ($objeto = $sql->fetch_object()) {
+            array_push($respuesta, $objeto);
+        }
+        return $respuesta;
+    }
     public function actualizarPassword($id, $password)
     {
         $sql = $this->conexion->query("UPDATE usuarios SET password ='$password' WHERE id='$id'");
@@ -74,7 +82,6 @@ class UsuarioModel
         }
         return $arrRespuesta;
     }
-   
     public function buscarUsuariosOrderByApellidosNombres_tabla_filtro($busqueda_tabla_dni, $busqueda_tabla_nomap, $busqueda_tabla_estado)
     {
         //condicionales para busqueda

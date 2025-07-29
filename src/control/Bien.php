@@ -15,8 +15,8 @@ $objAmbiente = new AmbienteModel();
 $objAdmin = new AdminModel();
 
 //variables de sesion
-$id_sesion = $_POST['sesion'];
-$token = $_POST['token'];
+$id_sesion = $_REQUEST['sesion'];
+$token = $_REQUEST['token'];
 
 if ($tipo == "buscar_bien_movimiento") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
@@ -224,6 +224,22 @@ if ($tipo == "datos_registro") {
         $arr_Respuesta['instituciones'] = $arr_Instirucion;
         $arr_Respuesta['status'] = true;
         $arr_Respuesta['msg'] = "Datos encontrados";
+    }
+    echo json_encode($arr_Respuesta);
+}
+if ($tipo == "listarBienes") {
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
+    if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
+        $arr_Bienes = $objBien->listarBienes();
+        foreach ($arr_Bienes as $bien) {
+            $ingresobien = $objIngreso->buscarIngresoBienById($bien->id_ingreso_bienes);
+            $ambiente = $objAmbiente->buscarAmbienteById($bien->id_ambiente);
+            $bien->ingresoname = $ingresobien->detalle;
+            $bien->ambientename = $ambiente->detalle;
+        }
+        $arr_Respuesta['contenido'] = $arr_Bienes;
+        $arr_Respuesta['status'] = true;
+        $arr_Respuesta['msg'] = 'correcto';
     }
     echo json_encode($arr_Respuesta);
 }

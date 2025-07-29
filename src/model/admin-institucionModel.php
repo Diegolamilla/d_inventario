@@ -78,6 +78,4 @@ class InstitucionModel
         return $arrRespuesta;
     }
 
-
-
 }

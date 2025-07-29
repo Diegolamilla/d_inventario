@@ -10,6 +10,12 @@ class IngresoModel
         $this->conexion = new Conexion();
         $this->conexion = $this->conexion->connect();
     }
+    public function buscarIngresoBienById($id)
+    {
+        $sql = $this->conexion->query("SELECT * FROM ingreso_bienes WHERE id='$id'");
+        $sql = $sql->fetch_object();
+        return $sql;
+    }
     public function registrarIngreso($detalle, $id_usuario)
     {
         $sql = $this->conexion->query("INSERT INTO ingreso_bienes (detalle  ,id_usuario) VALUES ('$detalle', '$id_usuario')");

@@ -30,6 +30,15 @@ class MovimientoModel
         }
         return $sql;
     }
+    
+    public function listarMovimientos(){
+        $respuesta = array();
+        $sql = $this->conexion->query("SELECT * FROM movimientos");
+        while ($row = $sql->fetch_object()) {
+             array_push($respuesta, $row);
+        }
+        return $respuesta;
+    }
 
     public function buscarMovimientoById($id)
     {

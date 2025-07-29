@@ -12,8 +12,8 @@ $objInstitucion = new InstitucionModel();
 $objUsuario = new UsuarioModel();
 
 //variables de sesion
-$id_sesion = $_POST['sesion'];
-$token = $_POST['token'];
+$id_sesion = $_REQUEST['sesion'];
+$token = $_REQUEST['token'];
 if ($tipo == "listar") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
@@ -25,10 +25,14 @@ if ($tipo == "listar") {
         if (!empty($arr_Institucion)) {
             // recorremos el array para agregar las opciones de las categorias
             for ($i = 0; $i < count($arr_Institucion); $i++) {
+                $beneficiario = $objUsuario->buscarUsuarioById($arr_Institucion[$i]->beneficiario);
                 // definimos el elemento como objeto
                 $arr_contenido[$i] = (object) [];
                 // agregamos solo la informacion que se desea enviar a la vista
-                $arr_contenido[$i]->id = $arr_Institucion[$i]->id;
+                 $arr_contenido[$i]->id = $arr_Institucion[$i]->id;
+                $arr_contenido[$i]->beneficiarioname = $beneficiario->nombres_apellidos;
+                $arr_contenido[$i]->ruc = $arr_Institucion[$i]->ruc;
+                $arr_contenido[$i]->cod_modular = $arr_Institucion[$i]->cod_modular;
                 $arr_contenido[$i]->nombre = $arr_Institucion[$i]->nombre;
             }
             $arr_Respuesta['status'] = true;
@@ -177,3 +181,4 @@ if ($tipo == "datos_registro") {
     }
     echo json_encode($arr_Respuesta);
 }
+
