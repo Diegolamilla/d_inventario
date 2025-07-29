@@ -183,22 +183,7 @@ $contenido_pdf .= '
             
     $contenido_pdf .= '
 
-        </p>
-            <table class="firma" style="width:100%; margin-top: 150px;"> <br><br><br><br><br><br>
-            <tr>
-                <td style="width: 50%; text-align: center;">
-                ------------------------------<br>
-                ENTREGUÉ CONFORME
-                </td>
-                <td style="width: 50%; text-align: center;">
-                ------------------------------<br>
-                RECIBÍ CONFORME
-                </td>
-            </tr>
-            </table>
-
     </body>
-
     </html>       
     ';
 

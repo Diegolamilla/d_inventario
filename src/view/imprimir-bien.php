@@ -190,22 +190,7 @@ $contenido_pdf .= '
             
     $contenido_pdf .= '
 
-        </p>
-            <table class="firma" style="width:100%; margin-top: 150px;"> <br><br><br><br><br><br>
-            <tr>
-                <td style="width: 50%; text-align: center;">
-                ------------------------------<br>
-                ENTREGUÉ CONFORME
-                </td>
-                <td style="width: 50%; text-align: center;">
-                ------------------------------<br>
-                RECIBÍ CONFORME
-                </td>
-            </tr>
-            </table>
-
     </body>
-
     </html>       
     ';
 require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
@@ -217,9 +202,9 @@ class MYPDF extends TCPDF {
         $logo_left  = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSABjBsifx4kJK7C6ewR1dqJ8DGpEoKk6McLQ&s';
         $logo_right = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_BSnUuKJh7yQ05Oav2g2R4W3L0o99TfFS-A&s';
 
-       $this->Image($logo_left, 15, 10, 38, 30); 
+      $this->Image($logo_left, 15, 10, 38, 30); 
       $this->Image($logo_right, 170, 10, 25, 25);
-       
+      
         // Logo
         
         // Título
