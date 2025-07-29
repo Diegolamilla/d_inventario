@@ -124,7 +124,7 @@
       <tr>
         <th>ITEM</th>
         <th>DNI</th>
-        <th>NOMBRE TY APELLIDOS</th>
+        <th>NOMBRE Y APELLIDOS</th>
         <th>CORREO</th>
         <th>TELEFONO</th>
         <th>ESTADO</th>
