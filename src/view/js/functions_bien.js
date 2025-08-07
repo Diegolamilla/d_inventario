@@ -74,16 +74,16 @@ async function listar_BienesOrdenados() {
 function generarfilastabla(item, ambientes) {
     let cont = 1;
     $(".filas_tabla").each(function () {
-    cont++;
+        cont++;
     })
     let nueva_fila = document.createElement("tr");
     nueva_fila.id = "fila" + item.id;
     nueva_fila.className = "filas_tabla";
 
-    listar_ambientes = `<option value="">Seleccione</option>`;
+    lista_ambiente = `<option value="">Seleccione</option>`;
     nombre_amb = '';
     ambientes.forEach(ambiente => {
-    amb_selected = "";
+        amb_selected = "";
         if (ambiente.id == item.id_ambiente) {
             amb_selected = "selected";
             nombre_amb = ambiente.detalle;

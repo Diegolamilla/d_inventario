@@ -113,7 +113,4 @@ class UsuarioModel
         }
         return $arrRespuesta;
     }
-
-
-
 }
