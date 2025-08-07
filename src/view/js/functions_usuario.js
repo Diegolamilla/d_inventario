@@ -23,15 +23,8 @@ async function listar_usuariosOrdenados() {
         formData.append('busqueda_tabla_dni', busqueda_tabla_dni);
         formData.append('busqueda_tabla_nomap', busqueda_tabla_nomap);
         formData.append('busqueda_tabla_estado', busqueda_tabla_estado);
-        if (typeof session_session !== 'undefined' && typeof token_token !== 'undefined') {
-            formData.append('sesion', session_session);
-            formData.append('token', token_token);
-        } else {
-            console.error('Variables de sesión no definidas');
-            alert('Error: Sesión no iniciada o expiró. Por favor, inicie sesión nuevamente.');
-            ocultarPopupCarga();
-            return;
-        }
+        formData.append('sesion', session_session);
+        formData.append('token', token_token);
         //enviar datos hacia el controlador
         let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=listar_usuarios_ordenados_tabla', {
             method: 'POST',

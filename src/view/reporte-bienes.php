@@ -5,81 +5,105 @@ require './vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-$curl = curl_init(); //inicia la sesión cURL
-curl_setopt_array($curl, array(
-    CURLOPT_URL => BASE_URL_SERVER . "src/control/Bien.php?tipo=listarBienes&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'], //url a la que se conecta
-    CURLOPT_RETURNTRANSFER => true, //devuelve el resultado como una cadena del tipo curl_exec
-    CURLOPT_FOLLOWLOCATION => true, //sigue el encabezado que le envíe el servidor
-    CURLOPT_ENCODING => "", // permite decodificar la respuesta y puede ser"identity", "deflate", y "gzip", si está vacío recibe todos los disponibles.
-    CURLOPT_MAXREDIRS => 10, // Si usamos CURLOPT_FOLLOWLOCATION le dice el máximo de encabezados a seguir
-    CURLOPT_TIMEOUT => 30, // Tiempo máximo para ejecutar
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, // usa la versión declarada
-    CURLOPT_CUSTOMREQUEST => "GET", // el tipo de petición, puede ser PUT, POST, GET o Delete dependiendo del servicio
-    CURLOPT_HTTPHEADER => array(
-        "x-rapidapi-host: " . BASE_URL_SERVER,
-        "x-rapidapi-key: XXXX"
-    ), //configura las cabeceras enviadas al servicio
-));
+// Función para obtener bienes desde el controlador
+function obtenerBienes() {
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => BASE_URL_SERVER . "src/control/Bien.php?tipo=listarBienes&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "GET",
+    ));
 
-$response = curl_exec($curl); // respuesta generada
-$err = curl_error($curl); // muestra errores en caso de existir
+    $response = curl_exec($curl);
+    $err = curl_error($curl);
+    curl_close($curl);
 
-curl_close($curl); // termina la sesión 
+    if ($err) {
+        throw new Exception("Error cURL: " . $err);
+    }
 
-if ($err) {
-    echo "cURL Error #:" . $err; // mostramos el error
-} else {
     $respuesta = json_decode($response);
+    
+    if (!$respuesta || !isset($respuesta->status) || !$respuesta->status) {
+        throw new Exception("Error al obtener datos: " . ($respuesta->msg ?? 'Respuesta inválida'));
+    }
 
-    $bienes = $respuesta->bienes;
+    return isset($respuesta->contenido) ? $respuesta->contenido : [];
+}
+
+try {
+    // Obtener bienes
+    $bienes = obtenerBienes();
+    
+    if (empty($bienes)) {
+        die("No hay bienes registrados en la base de datos");
+    }
 
     // Crear el Excel
     $spreadsheet = new Spreadsheet();
-    $spreadsheet->getProperties()->setCreator("admin")->setLastModifiedBy("yo")->setTitle("ReporteBienes")->setDescription("yo");
+    $spreadsheet->getProperties()
+        ->setCreator("Sistema de Inventario")
+        ->setLastModifiedBy("Sistema de Inventario")
+        ->setTitle("Reporte de Bienes")
+        ->setDescription("Reporte generado automáticamente");
+
     $activeWorkSheet = $spreadsheet->getActiveSheet();
     $activeWorkSheet->setTitle("Bienes");
 
-    // Estilo en negrita
+    // Estilo para encabezados
     $styleArray = [
         'font' => [
             'bold' => true,
-        ]
+        ],
+        'fill' => [
+            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+            'startColor' => [
+                'rgb' => 'E2EFDA',
+            ],
+        ],
     ];
 
-    // Aplica negrita a la fila 1 (de A1 a R1 si son 18 columnas)
-    $activeWorkSheet->getStyle('A1:R1')->applyFromArray($styleArray);
+    $activeWorkSheet->getStyle('A1:V1')->applyFromArray($styleArray);
 
+    // Encabezados completos
     $headers = [
         'ID',
-        'Id ingreso bienes',
-        'id ambiente',
-        'cod patrimonial',
-        'denominacion',
-        'marca',
+        'ID Ingreso Bienes',
+        'ID Ambiente',
+        'Código Patrimonial',
+        'Denominación',
+        'Marca',
         'Modelo',
-        'tipo',
+        'Tipo',
         'Color',
-        'serie',
-        'dimensiones',
-        'valor',
-        'situacion',
-        'estado conservacion',
-        'observaciones',
-        'fecha registro',
-        'usuario registro',
-        'estado'
+        'Serie',
+        'Dimensiones',
+        'Valor',
+        'Situación',
+        'Estado Conservación',
+        'Observaciones',
+        'Fecha Registro',
+        'Usuario Registro',
+        'Estado',
+        'Ingreso',
+        'Ambiente'
     ];
 
-    // Asignar cabeceras en la fila 1
+    // Asignar cabeceras
     foreach ($headers as $i => $header) {
         $columna = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
         $activeWorkSheet->setCellValue($columna . '1', $header);
     }
 
-    // Llenar los datos
+    // Llenar datos
     $row = 2;
     foreach ($bienes as $bien) {
-        $atributos = [
+        $datos = [
             $bien->id ?? '',
             $bien->id_ingreso_bienes ?? '',
             $bien->id_ambiente ?? '',
@@ -97,24 +121,34 @@ if ($err) {
             $bien->observaciones ?? '',
             $bien->fecha_registro ?? '',
             $bien->usuario_registro ?? '',
-            $bien->estado ?? ''
+            $bien->estado ?? '',
+            $bien->ingresoname ?? '',
+            $bien->ambientename ?? ''
         ];
 
-        foreach ($atributos as $i => $valor) {
+        foreach ($datos as $i => $valor) {
             $columna = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
             $activeWorkSheet->setCellValue($columna . $row, $valor);
         }
-
         $row++;
     }
 
+    // Autoajustar columnas
+    foreach (range(1, count($headers)) as $column) {
+        $columna = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($column);
+        $activeWorkSheet->getColumnDimension($columna)->setAutoSize(true);
+    }
 
+    // Generar archivo
     ob_clean();
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="reporte_bienes.xlsx"');
+    header('Content-Disposition: attachment; filename="reporte_bienes_' . date('Y-m-d_H-i-s') . '.xlsx"');
     header('Cache-Control: max-age=0');
 
     $writer = new Xlsx($spreadsheet);
     $writer->save('php://output');
     exit;
+
+} catch (Exception $e) {
+    die("Error: " . $e->getMessage());
 }

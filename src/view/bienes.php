@@ -43,7 +43,7 @@
         <div class="card">
             <div class="card-body">
                 <div>
-                  <a href="<?php echo BASE_URL; ?>reporte-bienes" class="btn btn-success"><i class="fa fa-file-excel"> Generar Reporte</i></a>
+                    <a href="<?php echo BASE_URL; ?>reporte-bienes" class="btn btn-success"><i class="fa fa-file-excel"> Generar Reporte</i></a>
                     <a href="<?php echo BASE_URL; ?>imprimir-bien" class="btn btn-danger"><i class="fa fa-print"> Imprimir Bienes</i></a>  
                 </div>
                 
