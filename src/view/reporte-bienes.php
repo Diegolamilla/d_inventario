@@ -5,57 +5,33 @@ require './vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-// Verificar si las constantes están definidas
-if (!defined('BASE_URL_SERVER')) {
-    require_once '../config/config1.php';
-}
-
-// Verificar si la sesión está iniciada
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Debug para verificar datos de sesión
-error_log("Sesión ID: " . ($_SESSION['sesion_id'] ?? 'No definido'));
-error_log("Token: " . ($_SESSION['sesion_token'] ?? 'No definido'));
-
-$curl = curl_init();
+$curl = curl_init(); //inicia la sesión cURL
 curl_setopt_array($curl, array(
-    CURLOPT_URL => BASE_URL_SERVER . "src/control/Bien.php?tipo=listarBienes&sesion=" . ($_SESSION['sesion_id'] ?? '') . "&token=" . ($_SESSION['sesion_token'] ?? ''),
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_ENCODING => "",
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 30,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => "GET",
+    CURLOPT_URL => BASE_URL_SERVER . "src/control/Bien.php?tipo=listarBienes&sesion=" . $_SESSION['sesion_id'] . "&token=" . $_SESSION['sesion_token'], //url a la que se conecta
+    CURLOPT_RETURNTRANSFER => true, //devuelve el resultado como una cadena del tipo curl_exec
+    CURLOPT_FOLLOWLOCATION => true, //sigue el encabezado que le envíe el servidor
+    CURLOPT_ENCODING => "", // permite decodificar la respuesta y puede ser"identity", "deflate", y "gzip", si está vacío recibe todos los disponibles.
+    CURLOPT_MAXREDIRS => 10, // Si usamos CURLOPT_FOLLOWLOCATION le dice el máximo de encabezados a seguir
+    CURLOPT_TIMEOUT => 30, // Tiempo máximo para ejecutar
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, // usa la versión declarada
+    CURLOPT_CUSTOMREQUEST => "GET", // el tipo de petición, puede ser PUT, POST, GET o Delete dependiendo del servicio
     CURLOPT_HTTPHEADER => array(
-        "Content-Type: application/json"
-    ),
+        "x-rapidapi-host: " . BASE_URL_SERVER,
+        "x-rapidapi-key: XXXX"
+    ), //configura las cabeceras enviadas al servicio
 ));
 
-$response = curl_exec($curl);
-$err = curl_error($curl);
-$httpCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-curl_close($curl);
+$response = curl_exec($curl); // respuesta generada
+$err = curl_error($curl); // muestra errores en caso de existir
+
+curl_close($curl); // termina la sesión 
 
 if ($err) {
-    die("cURL Error #:" . $err);
+    echo "cURL Error #:" . $err; // mostramos el error
 } else {
     $respuesta = json_decode($response);
-    
-    // Debug: verificar la estructura de la respuesta
-    error_log("Respuesta del servidor: " . print_r($respuesta, true));
-    
-    if (!$respuesta || !isset($respuesta->status)) {
-        die("Error: Respuesta inválida del servidor");
-    }
-    
-    if (!$respuesta->status) {
-        die("Error del servidor: " . ($respuesta->msg ?? 'Error desconocido'));
-    }
-    
-    $bienes = $respuesta->contenido ?? [];
+
+    $bienes = $respuesta->bienes;
 
     // Crear el Excel
     $spreadsheet = new Spreadsheet();
